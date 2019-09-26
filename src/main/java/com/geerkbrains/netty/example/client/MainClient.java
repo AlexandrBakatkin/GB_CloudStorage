@@ -13,7 +13,7 @@ public class MainClient extends Application {
         Parent root = fxmlLoader.load();
         MainController ctrl = fxmlLoader.getController();
         ctrl.init(ctrl);
-        primaryStage.setTitle("Box Client");
+        primaryStage.setTitle("Cloud Storage Client");
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();

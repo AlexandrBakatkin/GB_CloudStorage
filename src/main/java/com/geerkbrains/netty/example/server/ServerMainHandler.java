@@ -23,10 +23,9 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
                 return;
             }
             if (msg instanceof FileListRequest){
-                System.out.println("Get file list request");
-                    ArrayList <String> list = new ArrayList<>();
+
+                    ArrayList <String> fileList = new ArrayList<>();
                     Path path = Paths.get("./server_storage/");
-                    System.out.println(path.toString());
 
                     Files.walkFileTree(path, new FileVisitor<Path>() {
                         @Override
@@ -36,7 +35,7 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
 
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                            list.add(file.getFileName().toString());
+                            fileList.add(file.getFileName().toString());
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -51,13 +50,8 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
                         }
                     });
 
-                    FileListMessage fileListMessage = new FileListMessage(list);
+                    FileListMessage fileListMessage = new FileListMessage(fileList);
                     ctx.writeAndFlush(fileListMessage);
-                    for (String o: list
-                         ) {
-                        ctx.writeAndFlush(o);
-                    }
-
             }
             if (msg instanceof FileRequest) {
                 FileRequest fr = (FileRequest) msg;

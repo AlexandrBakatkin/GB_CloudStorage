@@ -89,13 +89,10 @@ public class MainController implements Initializable {
 
     public void pressOnDownloadBtn(ActionEvent actionEvent) throws IOException {
         if (tfFileName.getLength() > 0) {
-
             send(tfFileName.getText());
-
             tfFileName.clear();
         }
         refreshLocalFilesList();
-
     }
 
     private void refreshLocalFilesList() {
