@@ -23,10 +23,17 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
                 List<String> fileList = new ArrayList<>();
                 Path path = Paths.get(SERVER_STORAGE);
 
-                walkFileTree(fileList, path);
-
-                FileListMessage fileListMessage = new FileListMessage(fileList);
-                ctx.writeAndFlush(fileListMessage);
+                if(Files.exists(Paths.get(SERVER_STORAGE))){
+                    walkFileTree(fileList, path);
+                    if (fileList.isEmpty()){
+                        noFilesMsg(ctx, "Dir is empty", fileList);
+                    }
+                    FileListMessage fileListMessage = new FileListMessage(fileList);
+                    ctx.writeAndFlush(fileListMessage);
+                } else {
+                    Files.createDirectory(Paths.get(SERVER_STORAGE));
+                    noFilesMsg(ctx, "No files", fileList);
+                }
             }
             if (msg instanceof FileRequest) {
                 FileRequest fr = (FileRequest) msg;
@@ -42,16 +49,30 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    private void noFilesMsg(ChannelHandlerContext ctx, String str, List<String> fileList) {
+        fileList.add("No files");
+        FileListMessage fileListMessage = new FileListMessage(fileList);
+        ctx.writeAndFlush(fileListMessage);
+    }
+
     private void walkFileTree(final List<String> fileList, Path path) throws IOException {
+
         Files.walkFileTree(path, new FileVisitor<Path>() {
+
+            StringBuilder stringBuilder = new StringBuilder();
+
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                stringBuilder.append(dir.getFileName().toString() + "/");
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                fileList.add(file.getFileName().toString());
+                int i = stringBuilder.length();
+                stringBuilder.append(file.getFileName().toString());
+                fileList.add(stringBuilder.toString());
+                stringBuilder.delete(i, stringBuilder.length());
                 return FileVisitResult.CONTINUE;
             }
 
@@ -62,8 +83,10 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
                 return FileVisitResult.CONTINUE;
             }
+
         });
     }
 

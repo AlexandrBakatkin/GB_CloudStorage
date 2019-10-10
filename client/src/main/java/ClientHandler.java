@@ -4,13 +4,13 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
+import java.util.List;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     final private String CLIENT_STORAGE = "client_storage/";
 
-    private ArrayList<String> arrayList;
+    private List<String> list;
     private MainController mainController;
 
     public ClientHandler(MainController mainController){
@@ -32,9 +32,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         }
         if (msg instanceof FileListMessage){
             FileListMessage fileListMessage = (FileListMessage) msg;
-            arrayList = fileListMessage.getFileList();
+            list = fileListMessage.getFileList();
 
-            mainController.setList(arrayList);
+            mainController.setList(list);
         }
     }
 }

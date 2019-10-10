@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -29,7 +30,7 @@ public class MainController implements Initializable {
     public static final String CLIENT_STORAGE = "client_storage/";
     private Channel currentChannel;
     private MainController mainController;
-    private ArrayList<String> serverFileList;
+    private List<String> serverFileList;
 
     @FXML
     TextField tfFileName;
@@ -40,7 +41,7 @@ public class MainController implements Initializable {
     @FXML
     ListView<String> filesServerList;
 
-    public void setList(ArrayList<String> list) {
+    public void setList(List<String> list) {
         this.serverFileList = list;
     }
 
