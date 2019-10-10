@@ -1,14 +1,4 @@
-import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,17 +7,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
 
-    public static final String CLIENT_STORAGE = "client_storage/";
+    private static final String CLIENT_STORAGE = "client_storage/";
     private Channel currentChannel;
     private MainController mainController;
     private List<String> serverFileList;
@@ -48,9 +36,11 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        Thread t = new Thread(new Runnable() {
+        mainController = this;
 
-            @Override
+        new Thread(new Runnable() {
+
+            /*@Override
             public void run() {
                 EventLoopGroup group = new NioEventLoopGroup();
                 try {
@@ -78,12 +68,18 @@ public class MainController implements Initializable {
                         e.printStackTrace();
                     }
                 }
-            }
-        });
+            }*/
 
-        t.setDaemon(true);
-        t.start();
+            @Override
+            public void run(){
+                NettyNetwork.getInstance().start(mainController);
+            }
+        }).start();
+
+        /*t.setDaemon(true);
+        t.start();*/
         refreshLocalFilesList();
+        System.out.println(this.toString());
 
     }
 
@@ -120,17 +116,13 @@ public class MainController implements Initializable {
         }
     }
 
-    public void init(MainController ctrl) {
-        this.mainController = ctrl;
-    }
-
     public void send(String fileName){
         currentChannel.writeAndFlush(new FileRequest(fileName));
     }
 
-    public void getServerFiles(){
+    public void getServerFiles(ActionEvent actionEvent){
         filesServerList.getItems().clear();
-        currentChannel.writeAndFlush(new FileListRequest());
+        NettyNetwork.getInstance().getServerFiles();
         if (serverFileList != null){
             for (String o: serverFileList
             ) {

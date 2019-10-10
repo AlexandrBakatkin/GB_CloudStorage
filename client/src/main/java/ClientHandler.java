@@ -10,7 +10,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     final private String CLIENT_STORAGE = "client_storage/";
 
-    private List<String> list;
+    private List<String> listServerFiles;
     private MainController mainController;
 
     public ClientHandler(MainController mainController){
@@ -32,9 +32,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         }
         if (msg instanceof FileListMessage){
             FileListMessage fileListMessage = (FileListMessage) msg;
-            list = fileListMessage.getFileList();
+            listServerFiles = fileListMessage.getFileList();
 
-            mainController.setList(list);
+            mainController.setList(listServerFiles);
         }
     }
 }

@@ -9,8 +9,6 @@ public class MainClient extends Application {
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main.fxml"));
         Parent root = fxmlLoader.load();
-        MainController ctrl = fxmlLoader.getController();
-        ctrl.init(ctrl);
         primaryStage.setTitle("Cloud Storage Client");
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
