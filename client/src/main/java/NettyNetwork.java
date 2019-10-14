@@ -10,6 +10,7 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class NettyNetwork {
@@ -54,7 +55,15 @@ public class NettyNetwork {
         }
     }
 
-    public void getServerFiles(){
+    public void getServerFilesList(){
         currentChannel.writeAndFlush(new FileListRequest());
+    }
+
+    public void getFile(String fileName){
+        currentChannel.writeAndFlush(new FileRequest(fileName));
+    }
+
+    public void sendFile(String path) throws IOException {
+        currentChannel.writeAndFlush(new ClientFileRequest(path));
     }
 }

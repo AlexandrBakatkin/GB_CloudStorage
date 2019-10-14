@@ -37,15 +37,33 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
             }
             if (msg instanceof FileRequest) {
                 FileRequest fr = (FileRequest) msg;
-                if (Files.exists(Paths.get(SERVER_STORAGE + fr.getFilename()))) {
-                    FileMessage fm = new FileMessage(Paths.get(SERVER_STORAGE + fr.getFilename()));
-                    ctx.writeAndFlush(fm);
-                    String str = "Передаем файл";
-                    ctx.writeAndFlush(str);
+                String path;
+
+                if(fr.getFilename().startsWith(SERVER_STORAGE)){
+                    path = fr.getFilename();
+                    transferFile(ctx, path);
+                } else {
+                    path = SERVER_STORAGE + fr.getFilename();
+                    transferFile(ctx, path);
                 }
+            }
+            if (msg instanceof FileMessage){
+                FileMessage fm = (FileMessage) msg;
+                Files.write(Paths.get(SERVER_STORAGE + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
+                System.out.println("OK");
+            }
+            if (msg instanceof ClientFileRequest){
+                ctx.writeAndFlush(new FileRequest(((ClientFileRequest) msg).getPath()));
             }
         } finally {
             ReferenceCountUtil.release(msg);
+        }
+    }
+
+    private void transferFile(ChannelHandlerContext ctx, String path) throws IOException {
+        if (Files.exists(Paths.get(path))) {
+            FileMessage fm = new FileMessage(Paths.get(path));
+            ctx.writeAndFlush(fm);
         }
     }
 
@@ -58,8 +76,8 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
     private void walkFileTree(final List<String> fileList, Path path) throws IOException {
 
         Files.walkFileTree(path, new FileVisitor<Path>() {
-
-            StringBuilder stringBuilder = new StringBuilder();
+            String str = "./";
+            StringBuilder stringBuilder = new StringBuilder(str);
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -86,7 +104,6 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
                 stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
                 return FileVisitResult.CONTINUE;
             }
-
         });
     }
 

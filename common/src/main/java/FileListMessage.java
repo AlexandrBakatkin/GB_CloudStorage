@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 
 public class FileListMessage extends AbstractMessage {
