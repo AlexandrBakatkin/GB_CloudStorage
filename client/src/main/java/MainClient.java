@@ -13,6 +13,8 @@ public class MainClient extends Application {
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
+        MainController controller = fxmlLoader.getController();
+        primaryStage.setOnCloseRequest(controller.getClose());
     }
 
     public static void main(String[] args) {

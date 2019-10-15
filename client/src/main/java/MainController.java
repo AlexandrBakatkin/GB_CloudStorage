@@ -1,23 +1,20 @@
-import io.netty.channel.Channel;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
+import javafx.stage.WindowEvent;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MainController implements Initializable {
+public class MainController implements Initializable, EventHandler<WindowEvent> {
 
     private static final String CLIENT_STORAGE = "client_storage/";
     private List<String> serverFileList;
@@ -111,6 +108,15 @@ public class MainController implements Initializable {
                 filesServerList.getItems().add(o);
             }
         }
+    }
 
+    @Override
+    public void handle(WindowEvent event) {
+    }
+
+    private javafx.event.EventHandler<WindowEvent> closeEventHandler = event -> NettyNetwork.getInstance().closeConnection();
+
+    public javafx.event.EventHandler<WindowEvent> getClose() {
+        return closeEventHandler;
     }
 }

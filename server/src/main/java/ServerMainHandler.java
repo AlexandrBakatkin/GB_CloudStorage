@@ -20,43 +20,57 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
             }
             if (msg instanceof FileListRequest){
 
-                List<String> fileList = new ArrayList<>();
-                Path path = Paths.get(SERVER_STORAGE);
+                fileListTransfer(ctx);
 
-                if(Files.exists(Paths.get(SERVER_STORAGE))){
-                    walkFileTree(fileList, path);
-                    if (fileList.isEmpty()){
-                        noFilesMsg(ctx, "Dir is empty", fileList);
-                    }
-                    FileListMessage fileListMessage = new FileListMessage(fileList);
-                    ctx.writeAndFlush(fileListMessage);
-                } else {
-                    Files.createDirectory(Paths.get(SERVER_STORAGE));
-                    noFilesMsg(ctx, "No files", fileList);
-                }
             }
             if (msg instanceof FileRequest) {
-                FileRequest fr = (FileRequest) msg;
-                String path;
 
-                if(fr.getFilename().startsWith(SERVER_STORAGE)){
-                    path = fr.getFilename();
-                    transferFile(ctx, path);
-                } else {
-                    path = SERVER_STORAGE + fr.getFilename();
-                    transferFile(ctx, path);
-                }
+                fileTransfer(ctx, (FileRequest) msg);
+
             }
             if (msg instanceof FileMessage){
-                FileMessage fm = (FileMessage) msg;
-                Files.write(Paths.get(SERVER_STORAGE + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
-                System.out.println("OK");
+                fileCreate((FileMessage) msg);
             }
             if (msg instanceof ClientFileRequest){
                 ctx.writeAndFlush(new FileRequest(((ClientFileRequest) msg).getPath()));
             }
         } finally {
             ReferenceCountUtil.release(msg);
+        }
+    }
+
+    private void fileCreate(FileMessage msg) throws IOException {
+        FileMessage fm = msg;
+        Files.write(Paths.get(SERVER_STORAGE + fm.getFilename()), fm.getData(), StandardOpenOption.CREATE);
+    }
+
+    private void fileTransfer(ChannelHandlerContext ctx, FileRequest msg) throws IOException {
+        FileRequest fr = msg;
+        String path;
+
+        if(fr.getFilename().startsWith(SERVER_STORAGE)){
+            path = fr.getFilename();
+            transferFile(ctx, path);
+        } else {
+            path = SERVER_STORAGE + fr.getFilename();
+            transferFile(ctx, path);
+        }
+    }
+
+    private void fileListTransfer(ChannelHandlerContext ctx) throws IOException {
+        List<String> fileList = new ArrayList<>();
+        Path path = Paths.get(SERVER_STORAGE);
+
+        if(Files.exists(Paths.get(SERVER_STORAGE))){
+            walkFileTree(fileList, path);
+            if (fileList.isEmpty()){
+                noFilesMsg(ctx, "Dir is empty", fileList);
+            }
+            FileListMessage fileListMessage = new FileListMessage(fileList);
+            ctx.writeAndFlush(fileListMessage);
+        } else {
+            Files.createDirectory(Paths.get(SERVER_STORAGE));
+            noFilesMsg(ctx, "No files", fileList);
         }
     }
 
@@ -81,7 +95,7 @@ public class ServerMainHandler extends ChannelInboundHandlerAdapter {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                stringBuilder.append(dir.getFileName().toString() + "/");
+                stringBuilder.append(dir.getFileName().toString()).append("/");
                 return FileVisitResult.CONTINUE;
             }
 

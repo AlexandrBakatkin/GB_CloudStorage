@@ -66,4 +66,8 @@ public class NettyNetwork {
     public void sendFile(String path) throws IOException {
         currentChannel.writeAndFlush(new ClientFileRequest(path));
     }
+
+    public void closeConnection() {
+        currentChannel.close();
+    }
 }

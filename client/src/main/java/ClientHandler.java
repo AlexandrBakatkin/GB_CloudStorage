@@ -36,7 +36,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             FileListMessage fileListMessage = (FileListMessage) msg;
             listServerFiles = fileListMessage.getFileList();
             mainController.setList(listServerFiles);
-            //mainController.refresh();
+            mainController.refresh();
         }
         if (msg instanceof FileRequest){
             transferFile(((FileRequest) msg).getFilename(), ctx);
