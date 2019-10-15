@@ -9,22 +9,25 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="rootNode" style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
+<VBox fx:id="rootNode" style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
     <HBox VBox.vgrow="ALWAYS">
         <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
+            <Label text="Файлы на компьютере" textAlignment="CENTER"><font>
+                <Font name="System Bold" size="18.0" />
+            </font></Label>
         <HBox>
             <TextField fx:id="tfFileName" focusTraversable="false" promptText="Укажите имя файла на сервере, который хотите скачать" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets left="2.0" right="1.0" />
                </HBox.margin></TextField>
-            <Button onAction="#pressOnDownloadBtn" text="Скачать">
+            <Button onAction="#pressOnDownloadBtn" text="На клиент">
                <HBox.margin>
                   <Insets left="1.0" />
                </HBox.margin></Button>
         </HBox>
-            <ListView fx:id="filesList" VBox.vgrow="ALWAYS">
+            <ListView fx:id="filesList" VBox.vgrow="ALWAYS" onMousePressed="#pressedClientFileList">
             <VBox.margin>
-               <Insets left="2.0" top="2.0" />
+               <Insets left="2.0" top="6.0" />
             </VBox.margin></ListView>
         </VBox>
 
@@ -33,11 +36,16 @@
             <font>
                <Font name="System Bold" size="18.0" />
             </font></Label>
-            <Button onAction="#getServerFiles" text="Refresh"></Button>
-            <ListView fx:id="filesServerList" VBox.vgrow="ALWAYS">
-            <VBox.margin>
-               <Insets left="4.0" right="2.0" top="6.0" />
-            </VBox.margin></ListView>
+            <HBox>
+            <TextField fx:id="tfFileNameServer" promptText="Укажите файлы для передачи на сервер" HBox.hgrow="ALWAYS"><HBox.margin>
+                <Insets left="2.0" right="1.0" />
+            </HBox.margin></TextField>
+            <Button onAction="#sendFile" text="На сервер"></Button>
+            </HBox>
+            <ListView fx:id="filesServerList" VBox.vgrow="ALWAYS" onMousePressed="#pressedServerFileList">
+                <VBox.margin><Insets left="4.0" right="2.0" top="6.0" /></VBox.margin>
+            </ListView>
+            <Button onAction="#getServerFilesList" text="Обновить"></Button>
         </VBox>
 
     </HBox>

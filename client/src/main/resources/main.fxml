@@ -37,7 +37,7 @@
                <Font name="System Bold" size="18.0" />
             </font></Label>
             <HBox>
-            <TextField fx:id="tfFileNameServer"><HBox.margin>
+            <TextField fx:id="tfFileNameServer" promptText="Укажите файлы для передачи на сервер" HBox.hgrow="ALWAYS"><HBox.margin>
                 <Insets left="2.0" right="1.0" />
             </HBox.margin></TextField>
             <Button onAction="#sendFile" text="На сервер"></Button>
